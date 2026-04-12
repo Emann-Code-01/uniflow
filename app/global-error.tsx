@@ -8,7 +8,6 @@ export default function GlobalError({
   reset: () => void
 }) {
   return (
-    // global-error must include its own html and body tags
     <html>
       <body>
         <h2>Something went wrong!</h2>
