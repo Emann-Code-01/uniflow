@@ -2,13 +2,13 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const protectedRoutes = {
-  student: ['/dashboard', '/timetable', '/pulse', '/buddies'],
-  lecturer: ['/lecturer'],
-  admin: ['/admin'],
-}
+// const protectedRoutes = {
+//   student: ['/dashboard', '/timetable', '/pulse', '/buddies'],
+//   lecturer: ['/lecturer'],
+//   admin: ['/admin'],
+// }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
+          cookiesToSet.forEach(({ name, value }) => {
             request.cookies.set(name, value)
           })
         },

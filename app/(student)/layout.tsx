@@ -1,22 +1,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { Home, Calendar, Activity, Users, Bell } from 'lucide-react';
+import type { User } from '@supabase/supabase-js';
 
 export default function StudentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
     const checkUser = async () => {
+      const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         router.push('/login');
@@ -26,7 +28,7 @@ export default function StudentLayout({
     };
 
     checkUser();
-  }, [router, supabase]);
+  }, [router]);
 
   const navItems = [
     { label: 'Home', icon: Home, href: '/dashboard' },
@@ -40,7 +42,7 @@ export default function StudentLayout({
       {/* Top Nav */}
       <header className="top-nav">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="UniFlow" className="h-8" />
+          <Image src="/logo.svg" alt="UniFlow" width={32} height={32} className="h-8" />
           <div>
             <div className="font-semibold text-lg">UniFlow</div>
             <div className="text-xs text-(--color-text-muted) -mt-1!">AAUA</div>

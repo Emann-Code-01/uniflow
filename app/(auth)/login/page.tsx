@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { UserRole } from '@/types';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import type { AuthError } from '@supabase/supabase-js';
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState(''); // matric_number or staff_id or email
@@ -14,7 +16,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
 
   const router = useRouter();
-  const supabase = createClient();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,9 +23,11 @@ export default function LoginPage() {
     setError('');
 
     try {
+      const supabase = createClient();
+
       // For now, we'll use email/password auth (you can switch to magic link or custom later)
       // In real implementation, we'll link matric/staff_id to Supabase auth
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: identifier.includes('@') ? identifier : `${identifier.toLowerCase()}@uniflow.aaua.edu.ng`,
         password,
       });
@@ -41,8 +44,8 @@ export default function LoginPage() {
         router.push('/admin/dashboard');
       }
 
-    } catch (err: any) {
-      setError(err.message || 'Invalid login credentials');
+    } catch (err: AuthError | unknown) {
+      setError(err instanceof Error ? err.message : 'Invalid login credentials');
     } finally {
       setLoading(false);
     }
@@ -54,7 +57,7 @@ export default function LoginPage() {
         {/* Logo Header */}
         <div className="text-center mb-10!">
           <div className="mx-auto! mb-4! flex justify-center">
-            <img src="/logo.svg" alt="UniFlow" className="h-12" />
+            <Image src="/logo.svg" alt="UniFlow Logo" width={48} height={48} className="h-12" />
           </div>
           <h1 className="text-3xl font-bold text-(--color-text-primary)">Welcome to UniFlow</h1>
           <p className="text-(--color-text-secondary) mt-2!">
@@ -113,7 +116,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm bg-red-50 p-3! rounded-lg border border-red-200">
+              <div className="text-red-600 text-sm my-3! bg-red-50 p-3! rounded-lg border border-red-200">
                 {error}
               </div>
             )}
